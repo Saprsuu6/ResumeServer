@@ -1,8 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
-import router from "./routes.js";
-import { cors, log } from "./middlewares.js";
-import { CoinInfo } from "./interfaces.js";
+import router from "../../routes.js";
+import { cors, log } from "../../middlewares.js";
+import { CoinInfo } from "../../interfaces.js";
+import path from "path";
+import serverless from "serverless-http";
 
 export const neededBitcoinNameArray = [
   "Bitcoin",
@@ -35,6 +37,7 @@ class Server {
   private app = express();
   private port = 8080;
   private baseUrl = `http://localhost:${this.port}`;
+  private __dirname = path.resolve();
 
   constructor() {
     this.app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,16 +47,21 @@ class Server {
   run(): void {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
-    this.app.use(express.static("public"));
+    this.app.use(express.static(path.resolve(this.__dirname, "public")));
     this.app.use(cors);
     this.app.use(log);
-    this.app.use(router);
+    this.app.use("/api/", router);
 
     this.app.listen(this.port, async () => {
       console.log(this.baseUrl);
     });
   }
+
+  getApi() {
+    return this.app;
+  }
 }
 
 const server = new Server();
 server.run();
+export const handler = serverless(server.getApi());

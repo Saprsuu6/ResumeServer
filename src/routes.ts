@@ -1,7 +1,10 @@
 import express from "express";
 import { coinsInfo, ping } from "./cryptoService.js";
 import { CoinInfo, PingResponse } from "./interfaces.js";
-import { neededBitcoinNameArray, neededCoins } from "./server.js";
+import {
+  neededBitcoinNameArray,
+  neededCoins,
+} from "./netlify/functions/api.js";
 
 const router = express.Router();
 
