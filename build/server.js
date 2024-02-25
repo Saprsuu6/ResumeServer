@@ -43,7 +43,7 @@ class Server {
         this.app.use(express.static(path.resolve(this.__dirname, "public")));
         this.app.use(cors);
         this.app.use(log);
-        this.app.use("/api/", router);
+        this.app.use(router);
         this.app.listen(this.port, async () => {
             console.log(this.baseUrl);
         });
@@ -54,4 +54,4 @@ class Server {
 }
 const server = new Server();
 server.run();
-//# sourceMappingURL=api.js.map
+//# sourceMappingURL=server.js.map

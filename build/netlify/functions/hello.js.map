@@ -1,1 +1,0 @@
-{"version":3,"file":"hello.js","sourceRoot":"","sources":["../../../src/netlify/functions/hello.ts"],"names":[],"mappings":"AAEA,MAAM,OAAO,GAAY,KAAK,EAAE,KAAK,EAAE,OAAO,EAAE,EAAE;IAChD,OAAO;QACL,UAAU,EAAE,GAAG;QACf,IAAI,EAAE,IAAI,CAAC,SAAS,CAAC,EAAE,OAAO,EAAE,aAAa,EAAE,CAAC;KACjD,CAAC;AACJ,CAAC,CAAC;AAEF,OAAO,EAAE,OAAO,EAAE,CAAC"}

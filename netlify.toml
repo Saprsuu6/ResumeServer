@@ -1,12 +1,18 @@
 # example netlify.toml
-[functions]
-  external_node_modules = ["express"]
-  node_bundler = "esbuild"
-[[redirects]]
-  force = true
-  from = "/api/*"
-  status = 200
-  to = "/.netlify/functions/api/:splat"
+[build]
+  command = "npm run build"
+  functions = "src"
+  publish = "build"
+
+#[functions]
+#  external_node_modules = ["express"]
+#  node_bundler = "esbuild"
+#
+#[[redirects]]
+#  force = true
+#  from = "/api/*"
+#  status = 200
+#  to = "/.netlify/src/api/:splat"
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
   ## Not needed for static site generators.

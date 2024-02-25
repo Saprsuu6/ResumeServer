@@ -1,7 +1,7 @@
 import express from "express";
 import { coinsInfo, ping } from "./cryptoService.js";
 import { CoinInfo, PingResponse } from "./interfaces.js";
-import { neededBitcoinNameArray, neededCoins } from "./api.js";
+import { neededBitcoinNameArray, neededCoins } from "./server.js";
 
 const router = express.Router();
 

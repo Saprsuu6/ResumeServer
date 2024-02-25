@@ -1,6 +1,6 @@
 import express from "express";
 import { coinsInfo, ping } from "./cryptoService.js";
-import { neededBitcoinNameArray, neededCoins } from "./api.js";
+import { neededBitcoinNameArray, neededCoins } from "./server.js";
 const router = express.Router();
 router.route("/cryptoPing").get(async (req, res) => {
     const response = ping();
