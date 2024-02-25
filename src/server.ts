@@ -46,7 +46,7 @@ class Server {
   run(): void {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
-    this.app.use(express.static("public"));
+    this.app.use(express.static("./public"));
     this.app.use(cors);
     this.app.use(log);
     this.app.use("/api/", router);
