@@ -2,7 +2,7 @@
 [build]
   command = "npm run build"
   functions = "src"
-  publish = "src"
+  publish = "build"
 
 [functions]
   external_node_modules = ["express"]
