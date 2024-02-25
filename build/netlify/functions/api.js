@@ -3,7 +3,6 @@ import bodyParser from "body-parser";
 import router from "../../routes.js";
 import { cors, log } from "../../middlewares.js";
 import path from "path";
-import serverless from "serverless-http";
 export const neededBitcoinNameArray = [
     "Bitcoin",
     "Ethereum",
@@ -55,5 +54,4 @@ class Server {
 }
 const server = new Server();
 server.run();
-export const handler = serverless(server.getApi());
 //# sourceMappingURL=api.js.map
