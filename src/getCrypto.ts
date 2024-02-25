@@ -3,6 +3,12 @@ import { neededBitcoinNameArray, neededCoins } from "./server.js";
 import { coinsInfo } from "./cryptoService.js";
 
 const handler: Handler = async (event, context) => {
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+  };
+
   if (neededCoins.length <= 0) {
     let array: any = undefined;
 
@@ -33,6 +39,7 @@ const handler: Handler = async (event, context) => {
 
   return {
     statusCode: 200,
+    headers,
     body: JSON.stringify(neededCoins),
   };
 };
