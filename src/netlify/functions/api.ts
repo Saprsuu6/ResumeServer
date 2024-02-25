@@ -1,8 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
-import router from "../../routes.js";
-import { cors, log } from "../../middlewares.js";
-import { CoinInfo } from "../../interfaces.js";
+import router from "./routes.js";
+import { cors, log } from "./middlewares.js";
+import { CoinInfo } from "./interfaces.js";
 import path from "path";
 import serverless from "serverless-http";
 
