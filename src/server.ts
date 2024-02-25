@@ -1,4 +1,5 @@
 import express from "express";
+import serverless from "serverless-http";
 import bodyParser from "body-parser";
 import router from "./routes.js";
 import { cors, log } from "./middlewares.js";
@@ -48,13 +49,18 @@ class Server {
     this.app.use(express.static("public"));
     this.app.use(cors);
     this.app.use(log);
-    this.app.use(router);
+    this.app.use("/api/", router);
 
     this.app.listen(this.port, async () => {
       console.log(this.baseUrl);
     });
   }
+
+  getApi() {
+    return this.app;
+  }
 }
 
 const server = new Server();
-server.run();
+//server.run();
+export const handler = serverless(server.getApi());
