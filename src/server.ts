@@ -35,6 +35,7 @@ class Server {
   private app = express();
   private port = 8080;
   private baseUrl = `http://localhost:${this.port}`;
+  //private baseUrlProd = "https://saprlandserver.netlify.app/public/index.html";
 
   constructor() {
     this.app.use(bodyParser.urlencoded({ extended: true }));
