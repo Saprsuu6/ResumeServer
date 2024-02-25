@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
-import router from "../../routes.js";
-import { cors, log } from "../../middlewares.js";
+import router from "./routes.js";
+import { cors, log } from "./middlewares.js";
 import path from "path";
 export const neededBitcoinNameArray = [
     "Bitcoin",

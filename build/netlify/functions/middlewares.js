@@ -1,5 +1,5 @@
 import { coinsList } from "./cryptoService.js";
-import { neededCoins } from "./netlify/functions/api.js";
+import { neededCoins } from "./api.js";
 export function log(req, res, next) {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
