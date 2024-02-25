@@ -31,7 +31,7 @@ class Server {
     constructor() {
         this.app = express();
         this.port = 8080;
-        this.baseUrlProd = "https://saprlandserver.netlify.app/public/index.html";
+        this.baseUrl = `http://localhost:${this.port}`;
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
     }
@@ -43,7 +43,7 @@ class Server {
         this.app.use(log);
         this.app.use(router);
         this.app.listen(this.port, async () => {
-            console.log(this.baseUrlProd);
+            console.log(this.baseUrl);
         });
     }
 }
