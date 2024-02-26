@@ -54,5 +54,6 @@ class Server {
     }
 }
 const server = new Server();
+server.run();
 export const handler = serverless(server.getApi());
 //# sourceMappingURL=server.js.map

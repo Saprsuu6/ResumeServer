@@ -63,5 +63,5 @@ class Server {
 }
 
 const server = new Server();
-//server.run();
+server.run();
 export const handler = serverless(server.getApi());
