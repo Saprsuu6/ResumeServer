@@ -50,7 +50,7 @@ class Server {
     this.app.use(express.static(path.resolve(this.__dirname, "public")));
     this.app.use(cors);
     this.app.use(log);
-    this.app.use("/.netlify/functions/server", router);
+    this.app.use("/api/", router);
 
     this.app.listen(this.port, async () => {
       console.log(this.baseUrl);
@@ -61,4 +61,4 @@ class Server {
 }
 
 const server = new Server();
-module.exports.handler = serverless(server.run());
+//module.exports.handler = serverless(server.run());
