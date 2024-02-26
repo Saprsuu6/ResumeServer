@@ -44,16 +44,13 @@ class Server {
         this.app.use(express.static(path.resolve(this.__dirname, "public")));
         this.app.use(cors);
         this.app.use(log);
-        this.app.use("/api/", router);
+        this.app.use("/.netlify/functions/server", router);
         this.app.listen(this.port, async () => {
             console.log(this.baseUrl);
         });
-    }
-    getApi() {
         return this.app;
     }
 }
 const server = new Server();
-server.run();
-export const handler = serverless(server.getApi());
+module.exports.handler = serverless(server.run());
 //# sourceMappingURL=server.js.map
