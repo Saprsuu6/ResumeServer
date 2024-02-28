@@ -1,3 +1,5 @@
+import { Schema } from "swagger-jsdoc";
+
 export interface PingResponse {
   gecko_says: string;
 }

@@ -1,9 +1,10 @@
-import express from "express";
+import express, { Express } from "express";
 import bodyParser from "body-parser";
 import router from "./routes.js";
 import { cors, log } from "./middlewares.js";
 import { CoinInfo } from "./interfaces.js";
 import path from "path";
+import swaggerDocs from "./swagger.js";
 
 export const neededBitcoinNameArray = [
   "Bitcoin",
@@ -43,6 +44,18 @@ class Server {
     this.app.use(bodyParser.json());
   }
 
+  getPort(): number {
+    return this.port;
+  }
+
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
+  getApp(): Express {
+    return this.app;
+  }
+
   run() {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
@@ -54,10 +67,14 @@ class Server {
     this.app.listen(this.port, async () => {
       console.log(this.baseUrl);
     });
-
-    return this.app;
   }
 }
 
 const server = new Server();
-server.run()
+swaggerDocs(
+  () => {
+    server.run();
+  },
+  server.getApp(),
+  server.getBaseUrl()
+);

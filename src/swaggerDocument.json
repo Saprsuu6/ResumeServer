@@ -1,0 +1,79 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "SaprLand API"
+  },
+  "tags": [
+    {
+      "name": "Crypto",
+      "description": "Cryptocurrency API"
+    }
+  ],
+  "paths": {
+    "/getCryptoInfo": {
+      "get": {
+        "tags": ["Crypto"],
+        "summary": "Get all cryptos",
+        "description": "Get all cryptos",
+        "responses": {
+          "200": {
+            "description": "Successful getiings all cryptos",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Coins"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "aplication/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Coin": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "usd": {
+            "type": "number"
+          },
+          "usd_24h_change": {
+            "type": "number"
+          }
+        }
+      },
+      "Coins": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Coin"
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

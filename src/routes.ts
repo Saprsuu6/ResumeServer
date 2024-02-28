@@ -33,11 +33,13 @@ router.route("/getCryptoInfo").get(async (req, res) => {
       neededBitcoinNameArray.includes(coin.name)
     );
 
-    const newArrayWithConcreteFields = allNeededCoins.map((coin: any) => ({
-      name: coin.name,
-      usd: coin.current_price,
-      usd_24h_change: coin.price_change_percentage_1h_in_currency,
-    }));
+    const newArrayWithConcreteFields: CoinInfo[] = allNeededCoins.map(
+      (coin: any) => ({
+        name: coin.name,
+        usd: coin.current_price,
+        usd_24h_change: coin.price_change_percentage_1h_in_currency,
+      })
+    );
 
     neededCoins.push(...newArrayWithConcreteFields);
     setInterval(() => {
