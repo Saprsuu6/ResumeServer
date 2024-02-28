@@ -8,7 +8,7 @@ router.route("/cryptoPing").get(async (req, res) => {
         res.send(data);
     });
 });
-router.get("/getCryptoInfo", async (req, res) => {
+router.route("/getCryptoInfo").get(async (req, res) => {
     if (neededCoins.length <= 0) {
         let array = undefined;
         try {
