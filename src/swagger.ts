@@ -8,8 +8,6 @@ import { SwaggerThemeNameEnum } from "swagger-themes/build/enums/swagger-theme-n
 const __dirname = path.resolve();
 const theme = new SwaggerTheme();
 
-const optionsV1 = theme.getDefaultConfig(SwaggerThemeNameEnum.DARK);
-
 async function loadJsonFile(path: string) {
   try {
     const rawData = await fs.readFile(`${__dirname}${path}`, {

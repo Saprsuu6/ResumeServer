@@ -1,7 +1,11 @@
 import express from "express";
 import { coinsInfo, ping } from "./cryptoService.js";
 import { neededBitcoinNameArray, neededCoins } from "./index.js";
+import path from "path";
 const router = express.Router();
+router.route("/").get(async (req, res) => {
+    res.sendFile(path.resolve(__dirname, "public", "index.html"));
+});
 router.route("/cryptoPing").get(async (req, res) => {
     const response = ping();
     response.then((data) => {
