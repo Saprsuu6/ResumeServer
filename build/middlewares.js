@@ -1,5 +1,5 @@
 import { coinsList } from "./cryptoService.js";
-import { neededCoins } from "./server.js";
+import { neededCoins } from "./index.js";
 export function log(req, res, next) {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();

@@ -1,4 +1,4 @@
-import { neededBitcoinNameArray, neededCoins } from "./server.js";
+import { neededBitcoinNameArray, neededCoins } from "./index.js";
 import { coinsInfo } from "./cryptoService.js";
 const handler = async (event, context) => {
     const headers = {

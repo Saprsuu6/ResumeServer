@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { coinsList } from "./cryptoService.js";
-import { neededCoins } from "./server.js";
+import { neededCoins } from "./index.js";
 
 export function log(req: Request, res: Response, next: NextFunction): void {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);

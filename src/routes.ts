@@ -1,7 +1,7 @@
 import express from "express";
 import { coinsInfo, ping } from "./cryptoService.js";
 import { CoinInfo, PingResponse } from "./interfaces.js";
-import { neededBitcoinNameArray, neededCoins } from "./server.js";
+import { neededBitcoinNameArray, neededCoins } from "./index.js";
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.route("/cryptoPing").get(async (req, res) => {
   });
 });
 
-router.get("/getCryptoInfo", async (req, res) => {
+router.route("/getCryptoInfo").get(async (req, res) => {
   if (neededCoins.length <= 0) {
     let array: any = undefined;
 
