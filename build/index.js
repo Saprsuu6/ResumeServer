@@ -29,11 +29,13 @@ export const neededBitcoinNameArray = [
   "Ethereum Classic",
 ];
 export const neededCoins = [];
+
+const isDev = false;
 class Server {
   constructor() {
     this.app = express();
     this.port = 8080;
-    this.baseUrl = "https://server-lisa.onrender.com"; //`http://localhost:${this.port}`;
+    this.baseUrl = !isDev ? "https://server-lisa.onrender.com" : `http://localhost:${this.port}`;
     this.__dirname = path.resolve();
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(bodyParser.json());
