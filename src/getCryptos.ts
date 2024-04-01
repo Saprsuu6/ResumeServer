@@ -4,7 +4,7 @@ import { coinsInfo } from "./cryptoService.js";
 import { Context } from "@netlify/functions";
 import { CoinInfo } from "./interfaces.js";
 
-export default async (request: Request, context: Context) => {
+export const getCryptos = async (request: Request, context: Context) => {
   if (neededCoins.length <= 0) {
     let array: any = undefined;
 
