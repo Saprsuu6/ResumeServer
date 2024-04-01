@@ -1,6 +1,6 @@
 import { neededBitcoinNameArray, neededCoins } from "./index.js";
 import { coinsInfo } from "./cryptoService.js";
-export default async (request, context) => {
+export const getCryptos = async (request, context) => {
     if (neededCoins.length <= 0) {
         let array = undefined;
         try {
@@ -26,6 +26,6 @@ export default async (request, context) => {
     return neededCoins;
 };
 export const config = {
-    path: "/test",
+    path: "/getCryptos",
 };
 //# sourceMappingURL=getCryptos.js.map

@@ -35,5 +35,5 @@ export const getCryptos = async (request: Request, context: Context) => {
 };
 
 export const config: Config = {
-  path: "/test",
+  path: "/getCryptos",
 };
