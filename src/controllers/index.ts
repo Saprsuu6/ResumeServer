@@ -1,8 +1,8 @@
 import open from 'open';
 
-import app from '../app';
-import { CoinInfo } from '../interfaces/interfaces';
-import swaggerDocs from '../swagger/swagger';
+import app from '../app.ts';
+import { CoinInfo } from '../interfaces/interfaces.ts';
+import swaggerDocs from '../swagger/swagger.ts';
 
 export const neededBitcoinNameArray = [
   'Bitcoin',
@@ -34,8 +34,27 @@ export const neededCoins: Array<CoinInfo> = [];
 const PORT = 8080;
 const BASE_URL = `http://localhost:${PORT}`;
 
-app.listen(PORT, async () => {
+const server = app.listen(PORT, async () => {
   console.log(`Server is running at ${BASE_URL}`);
   await open(`http://localhost:${PORT}`);
   swaggerDocs(app, BASE_URL);
 });
+
+// Обработчик корректного завершения процесса
+const shutdown = () => {
+  console.log('Shutting down server...');
+  server.close(() => {
+    console.log('Server closed.');
+    process.exit(0); // Завершаем процесс
+  });
+
+  // Если сервер не закроется за 10 секунд — принудительное завершение
+  setTimeout(() => {
+    console.error('Server did not close in time, forcefully shutting down.');
+    process.exit(1); // Завершаем с ошибкой
+  }, 10000);
+};
+
+// Обработка системных сигналов для завершения сервера
+process.on('SIGINT', shutdown); // Нажатие Ctrl+C
+process.on('SIGTERM', shutdown); // Сигнал завершения системы

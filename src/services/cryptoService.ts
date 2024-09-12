@@ -1,4 +1,4 @@
-import { PingResponse } from '../interfaces/interfaces';
+import { PingResponse } from '../interfaces/interfaces.ts';
 
 const baseUrl = 'https://api.coingecko.com/api/v3';
 

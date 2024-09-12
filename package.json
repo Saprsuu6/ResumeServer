@@ -5,8 +5,9 @@
   "main": "controllers/index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon",
-    "build": "npx tsc"
+    "dev": "kill-port 8080 && nodemon",
+    "build": "npx tsc",
+    "eslint_test": "npx eslint \"src/**/*.{js,ts}\" --fix"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,10 @@
   "devDependencies": {
     "@types/node": "^22.5.4",
     "@types/swagger-ui-express": "^4.1.6",
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "@typescript-eslint/parser": "^8.5.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.30.0",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { neededCoins } from '../controllers';
-import { coinsList } from '../services/cryptoService';
+import { neededCoins } from '../controllers/index.ts';
+import { coinsList } from '../services/cryptoService.ts';
 
 export function log(req: Request, res: Response, next: NextFunction): void {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);

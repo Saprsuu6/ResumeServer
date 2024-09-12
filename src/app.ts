@@ -2,8 +2,8 @@ import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import path from 'path';
 
-import { cors, log } from './middlewares/middlewares.js';
-import router from './routes/routes.js';
+import { cors, log } from './middlewares/middlewares.ts';
+import router from './routes/routes.ts';
 
 class App {
   public app: Express;

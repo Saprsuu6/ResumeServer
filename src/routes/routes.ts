@@ -1,9 +1,9 @@
 import express from 'express';
 import path from 'path';
 
-import { neededBitcoinNameArray, neededCoins } from '../controllers';
-import { CoinInfo, PingResponse } from '../interfaces/interfaces';
-import { coinsInfo, ping } from '../services/cryptoService';
+import { neededBitcoinNameArray, neededCoins } from '../controllers/index.ts';
+import { CoinInfo, PingResponse } from '../interfaces/interfaces.ts';
+import { coinsInfo, ping } from '../services/cryptoService.ts';
 
 const router = express.Router();
 

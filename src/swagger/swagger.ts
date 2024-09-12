@@ -1,8 +1,7 @@
 import { Express } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
-import { SwaggerTheme } from 'swagger-themes';
-import { SwaggerThemeNameEnum } from 'swagger-themes/build/enums/swagger-theme-name';
+import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 import swaggerUi from 'swagger-ui-express';
 
 const __dirname = path.resolve();
