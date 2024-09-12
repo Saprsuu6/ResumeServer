@@ -5,6 +5,7 @@
   "main": "controllers/index.js",
   "type": "module",
   "scripts": {
+    "start": "kill-port 8080 && nodemon",
     "dev": "kill-port 8080 && nodemon",
     "build": "npx tsc",
     "eslint_test": "npx eslint \"src/**/*.{js,ts}\" --fix"
