@@ -31,7 +31,7 @@ export const neededBitcoinNameArray = [
 
 export const neededCoins: Array<CoinInfo> = [];
 
-const PORT = 8080;
+const PORT = parseInt(process.env.PORT as string);
 const BASE_URL = `http://localhost:${PORT}`;
 
 const server = app.listen(PORT, async () => {
