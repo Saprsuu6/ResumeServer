@@ -1,8 +1,11 @@
+import dotenv from 'dotenv';
 import open from 'open';
 
 import app from '../app.ts';
 import { CoinInfo } from '../interfaces/interfaces.ts';
 import swaggerDocs from '../swagger/swagger.ts';
+
+dotenv.config();
 
 export const neededBitcoinNameArray = [
   'Bitcoin',

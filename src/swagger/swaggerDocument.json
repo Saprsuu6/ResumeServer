@@ -8,6 +8,10 @@
     {
       "name": "Crypto",
       "description": "Cryptocurrency API"
+    },
+    {
+      "name": "TebiIo",
+      "description": "Tebi.io Storage API"
     }
   ],
   "paths": {
@@ -18,9 +22,9 @@
         "description": "Get all cryptos",
         "responses": {
           "200": {
-            "description": "Successful getiings all cryptos",
+            "description": "Successful getting all cryptos",
             "content": {
-              "aplication/json": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Coins"
                 }
@@ -30,11 +34,91 @@
           "500": {
             "description": "Internal Server Error",
             "content": {
-              "aplication/json": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploadImgToTebiIo": {
+      "post": {
+        "tags": ["TebiIo"],
+        "summary": "Upload multiple images to Tebi.io",
+        "description": "Endpoint for uploading multiple image files to Tebi.io storage.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "The array of image files to upload."
+                  }
+                },
+                "required": ["image"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful upload of the images",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uris": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The URIs of the uploaded images."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Need at least one file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
                   }
                 }
               }
