@@ -65,9 +65,13 @@
                       "format": "binary"
                     },
                     "description": "The array of image files to upload."
+                  },
+                  "OWNER_PASSWORD": {
+                    "type": "string",
+                    "description": "The password required to authorize the upload."
                   }
                 },
-                "required": ["image"]
+                "required": ["image", "OWNER_PASSWORD"]
               }
             }
           }
@@ -107,6 +111,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden. Invalid OWNER_PASSWORD."
           },
           "500": {
             "description": "Internal error",

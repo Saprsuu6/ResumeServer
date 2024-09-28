@@ -11,6 +11,7 @@ import { neededBitcoinNameArray, neededCoins } from '../controllers/index.ts';
 import { CoinInfo, PingResponse } from '../interfaces/interfaces.ts';
 import { coinsInfo, ping } from '../services/cryptoService.ts';
 import { uploadFile } from '../services/tebi.ts';
+import { validateOwnerPassword } from './../middlewares/middlewares.ts';
 
 const router = express.Router();
 
@@ -69,46 +70,54 @@ router.route('/getCryptoInfo').get(async (req, res) => {
   res.send(neededCoins);
 });
 
-router.route('/uploadImgToTebiIo').post(upload.array('image'), async (req, res) => {
-  // Проверяем, загружены ли файлы
-  if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
-    return res.status(400).send({ message: 'Need at least one file' });
-  }
-
-  const files = req.files as Express.Multer.File[]; // Приводим к правильному типу
-  const uploadedFilesUris: string[] = [];
-
-  try {
-    // Обрабатываем каждый файл
-    for (const file of files) {
-      const fileStream = createReadStream(file.path);
-      const uniqueFileName = `${uuidv4()}_${file.originalname}`;
-
-      try {
-        // Загружаем файл на Tebi и сохраняем ссылку
-        const uri = await uploadFile(uniqueFileName, fileStream, file);
-        uploadedFilesUris.push(uri);
-
-        // Ожидаем завершения потока перед удалением файла
-        await finished(fileStream);
-      } catch (err) {
-        console.error(`Error uploading file ${file.originalname}:`, err);
-        return res.status(400).send({ message: 'Internal error' });
-      } finally {
-        try {
-          // Удаляем временный файл после загрузки
-          await fs.unlink(file.path); // Асинхронное удаление
-        } catch (unlinkError) {
-          console.error(`Error deleting file ${file.path}:`, unlinkError);
-        }
-      }
+router.route('/uploadImgToTebiIo').post(
+  // Используем upload.fields для обработки как файлов, так и полей формы
+  upload.fields([
+    { name: 'image', maxCount: 10 }, // Обрабатываем до 10 файлов
+    { name: 'OWNER_PASSWORD', maxCount: 1 } // Поле для пароля
+  ]),
+  validateOwnerPassword, // Проверяем наличие и правильность пароля
+  async (req, res) => {
+    // Проверяем, загружены ли файлы
+    if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
+      return res.status(400).send({ message: 'Need at least one file' });
     }
 
-    // Возвращаем ссылки на все загруженные файлы
-    res.send({ uris: uploadedFilesUris });
-  } catch (err) {
-    return res.status(500).send({ message: err });
+    const files = req.files as Express.Multer.File[]; // Приводим к правильному типу
+    const uploadedFilesUris: string[] = [];
+
+    try {
+      // Обрабатываем каждый файл
+      for (const file of files) {
+        const fileStream = createReadStream(file.path);
+        const uniqueFileName = `${uuidv4()}_${file.originalname}`;
+
+        try {
+          // Загружаем файл на Tebi и сохраняем ссылку
+          const uri = await uploadFile(uniqueFileName, fileStream, file);
+          uploadedFilesUris.push(uri);
+
+          // Ожидаем завершения потока перед удалением файла
+          await finished(fileStream);
+        } catch (err) {
+          console.error(`Error uploading file ${file.originalname}:`, err);
+          return res.status(400).send({ message: 'Internal error' });
+        } finally {
+          try {
+            // Удаляем временный файл после загрузки
+            await fs.unlink(file.path); // Асинхронное удаление
+          } catch (unlinkError) {
+            console.error(`Error deleting file ${file.path}:`, unlinkError);
+          }
+        }
+      }
+
+      // Возвращаем ссылки на все загруженные файлы
+      res.send({ uris: uploadedFilesUris });
+    } catch (err) {
+      return res.status(500).send({ message: err });
+    }
   }
-});
+);
 
 export default router;
