@@ -12,6 +12,10 @@
     {
       "name": "TebiIo",
       "description": "Tebi.io Storage API"
+    },
+    {
+      "name": "ConcertPosters",
+      "description": "Concert posters API"
     }
   ],
   "paths": {
@@ -133,6 +137,219 @@
           }
         }
       }
+    },
+    "/posters": {
+      "post": {
+        "tags": ["ConcertPosters"],
+        "summary": "Add a new poster",
+        "description": "Adds a new concert poster.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConcertPoster"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Poster successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Постер успешно добавлен"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error adding poster",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["ConcertPosters"],
+        "summary": "Get all posters",
+        "description": "Retrieve a list of all concert posters.",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of posters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConcertPoster"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error retrieving posters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posters/byId/{id}": {
+      "get": {
+        "tags": ["ConcertPosters"],
+        "summary": "Get poster by ID",
+        "description": "Retrieve a specific poster by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the poster to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of the poster",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConcertPoster"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error retrieving poster",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posters/{id}": {
+      "delete": {
+        "tags": ["ConcertPosters"],
+        "summary": "Delete poster by ID",
+        "description": "Delete a specific poster by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the poster to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Poster successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Постер с id {id} успешно удалён"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error deleting poster",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["ConcertPosters"],
+        "summary": "Update poster by ID",
+        "description": "Update the details of a specific poster by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the poster to update"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConcertPoster"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Poster successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Постер с id {id} успешно обновлён"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error updating poster",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -155,6 +372,61 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/Coin"
+        }
+      },
+      "ConcertPoster": {
+        "type": "object",
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "description": "Ссылка на изображение афиши концерта"
+          },
+          "eventName": {
+            "type": "string",
+            "description": "Название концерта"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание концерта"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата и время концерта"
+          },
+          "location": {
+            "type": "string",
+            "description": "Место проведения концерта"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Список исполнителей"
+          },
+          "ticketPrice": {
+            "type": "number",
+            "description": "Стоимость билета"
+          },
+          "availableTickets": {
+            "type": "number",
+            "description": "Количество доступных билетов"
+          },
+          "eventType": {
+            "type": "string",
+            "description": "Тип мероприятия (например, концерт)"
+          },
+          "organizer": {
+            "type": "string",
+            "description": "Организатор концерта"
+          }
+        }
+      },
+      "ConcertPosters": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ConcertPoster"
         }
       },
       "Error": {

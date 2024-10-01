@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { createReadStream, existsSync, mkdirSync } from 'fs';
 import fs from 'fs/promises';
 import multer from 'multer';
@@ -8,10 +8,11 @@ import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
 import { neededBitcoinNameArray, neededCoins } from '../controllers/index.ts';
-import { CoinInfo, PingResponse } from '../interfaces/interfaces.ts';
+import { CoinInfo, IConcertPoster, PingResponse } from '../interfaces/interfaces.ts';
 import { coinsInfo, ping } from '../services/cryptoService.ts';
+import { addPoster, deletePoster, getPosterById, getPosters, updatePoster } from '../services/mongoDb.ts';
 import { uploadFile } from '../services/tebi.ts';
-import { validateOwnerPassword } from './../middlewares/middlewares.ts';
+import { handleValidationErrors, validateOwnerPassword, validatePoster } from './../middlewares/middlewares.ts';
 
 const router = express.Router();
 
@@ -119,5 +120,56 @@ router.route('/uploadImgToTebiIo').post(
     }
   }
 );
+
+router.route('/posters').post(validatePoster, handleValidationErrors, async (req: Request, res: Response) => {
+  try {
+    const poster: IConcertPoster = req.body;
+    await addPoster(poster);
+    res.status(201).json({ message: 'Постер успешно добавлен' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Ошибка при добавлении постера' });
+  }
+});
+
+router.route('/posters').get(async (req, res) => {
+  try {
+    const posters = await getPosters();
+    res.status(200).json(posters);
+  } catch (error) {
+    res.status(500).json({ error: 'Ошибка при получении постеров' });
+  }
+});
+
+router.route('/posters/byId/:id').get(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const poster = await getPosterById(id);
+    res.status(200).json(poster);
+  } catch (error) {
+    res.status(500).json({ error: 'Ошибка при получении постеров' });
+  }
+});
+
+router.route('/posters/:id').delete(async (req, res) => {
+  try {
+    const { id } = req.params;
+    await deletePoster(id);
+    res.status(200).json({ message: `Постер с id ${id} успешно удалён` });
+  } catch (error) {
+    res.status(500).json({ error: 'Ошибка при удалении постера' });
+  }
+});
+
+router.route('/posters/:id').put(validatePoster, handleValidationErrors, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updatedData: Partial<IConcertPoster> = req.body;
+    await updatePoster(id, updatedData);
+    res.status(200).json({ message: `Постер с id ${id} успешно обновлён` });
+  } catch (error) {
+    res.status(500).json({ error: 'Ошибка при обновлении постера' });
+  }
+});
 
 export default router;

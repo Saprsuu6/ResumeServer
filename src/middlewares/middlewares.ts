@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { check, validationResult } from 'express-validator';
 
 import { neededCoins } from '../controllers/index.ts';
 import { coinsList } from '../services/cryptoService.ts';
@@ -38,3 +39,27 @@ export async function validateOwnerPassword(req: Request, res: Response, next: N
 
   next();
 }
+
+export const validatePoster = [
+  check('imageUrl').isURL().withMessage('Поле imageUrl должно быть валидным URL'),
+  check('eventName').isLength({ min: 1 }).withMessage('Поле eventName обязательно'),
+  check('description').isLength({ min: 1 }).withMessage('Поле description обязательно'),
+  check('date').isISO8601().toDate().withMessage('Поле date должно быть валидной датой'),
+  check('location').isLength({ min: 1 }).withMessage('Поле location обязательно'),
+  check('artists').isArray().withMessage('Поле artists должно быть массивом'),
+  check('ticketPrice').isFloat({ min: 0 }).withMessage('Поле ticketPrice должно быть числом больше или равно 0'),
+  check('availableTickets')
+    .isInt({ min: 0 })
+    .withMessage('Поле availableTickets должно быть целым числом больше или равно 0'),
+  check('eventType').isLength({ min: 1 }).withMessage('Поле eventType обязательно'),
+  check('organizer').isLength({ min: 1 }).withMessage('Поле organizer обязательно')
+];
+
+// использовать вместе с концкертным валидатором
+export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  next();
+};

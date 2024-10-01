@@ -7,3 +7,16 @@ export interface CoinInfo {
   usd: number;
   usd_24h_change: number;
 }
+
+export interface IConcertPoster {
+  imageUrl: string;
+  eventName: string;
+  description: string;
+  date: Date;
+  location: string;
+  artists: string[];
+  ticketPrice: number;
+  availableTickets: number;
+  eventType: string;
+  organizer: string;
+}

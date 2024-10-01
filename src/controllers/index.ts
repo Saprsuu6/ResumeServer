@@ -3,6 +3,7 @@ import open from 'open';
 
 import app from '../app.ts';
 import { CoinInfo } from '../interfaces/interfaces.ts';
+import { connectToMongo } from '../services/mongoDb.ts';
 import swaggerDocs from '../swagger/swagger.ts';
 
 dotenv.config();
@@ -40,6 +41,7 @@ const BASE_URL = `http://localhost:${PORT}`;
 const server = app.listen(PORT, async () => {
   console.log(`Server is running at ${BASE_URL}`);
   await open(`http://localhost:${PORT}`);
+  connectToMongo();
   swaggerDocs(app, BASE_URL);
 });
 
