@@ -127,7 +127,6 @@ router.route('/posters').post(validatePoster, handleValidationErrors, async (req
     await addPoster(poster);
     res.status(201).json({ message: 'Постер успешно добавлен' });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: 'Ошибка при добавлении постера' });
   }
 });

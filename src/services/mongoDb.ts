@@ -8,8 +8,6 @@ dotenv.config();
 const uri = process.env.MONGO_DB_CONNECTION_STRING as string;
 const dbName = process.env.MONGO_DB_NAME;
 
-console.log(uri);
-
 export async function connectToMongo() {
   const client = new MongoClient(uri);
 
