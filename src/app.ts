@@ -3,7 +3,11 @@ import express, { Express } from 'express';
 import path from 'path';
 
 import { cors, log } from './middlewares/middlewares.ts';
-import router from './routes/routes.ts';
+import authRouter from './routes/auth/auth.ts';
+import cryptosRouter from './routes/cryptos/cryptos.ts';
+import postersRouter from './routes/posters/posters.ts';
+import generalRouter from './routes/routes.ts';
+import tebiIoRouter from './routes/tebiIo/tebiIo.ts';
 
 export class App {
   public app: Express;
@@ -24,7 +28,11 @@ export class App {
   }
 
   private configureRoutes(): void {
-    this.app.use(router);
+    this.app.use(generalRouter);
+    this.app.use(cryptosRouter);
+    this.app.use(authRouter);
+    this.app.use(postersRouter);
+    this.app.use(tebiIoRouter);
   }
 }
 

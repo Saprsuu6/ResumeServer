@@ -20,3 +20,8 @@ export interface IConcertPoster {
   eventType: string;
   organizer: string;
 }
+
+export interface IClient {
+  username: string;
+  password: string;
+}

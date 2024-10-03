@@ -1,29 +1,44 @@
 import { NextFunction, Request, Response } from 'express';
 import { check, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
 
 import { neededCoins } from '../controllers/index.ts';
 import { coinsList } from '../services/cryptoService.ts';
+import { getUserByUsername } from '../services/mongoDb.ts';
 
-export function log(req: Request, res: Response, next: NextFunction): void {
+export const log = (req: Request, _: Response, next: NextFunction) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
-}
+};
 
-export function cors(req: Request, res: Response, next: NextFunction): void {
-  res.header('Access-Control-Allow-Origin', '*'); // Разрешить доступ со всех доменов
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+export const cors = (req: Request, res: Response, next: NextFunction) => {
+  // Разрешаем доступ со всех доменов
+  res.header('Access-Control-Allow-Origin', '*');
+
+  // Разрешаем указанные заголовки
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+  // Разрешаем указанные методы
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+
+  // Если это метод OPTIONS, завершаем запрос
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+
   next();
-}
+};
 
-export async function setResCoins(req: Request, res: Response, next: NextFunction): Promise<void> {
+export const setResCoins = async (req: Request, _: Response, next: NextFunction) => {
   if (neededCoins.length <= 0) {
     const response = await coinsList();
     req.body = response;
   }
   next();
-}
+};
 
-export async function validateOwnerPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+export const validateOwnerPassword = (req: Request, res: Response, next: NextFunction) => {
   const { OWNER_PASSWORD } = req.body;
 
   // Проверка обязательных параметров
@@ -38,7 +53,89 @@ export async function validateOwnerPassword(req: Request, res: Response, next: N
   }
 
   next();
-}
+};
+
+export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    res.sendStatus(401);
+    return;
+  }
+
+  jwt.verify(token, process.env.SECRET_ACCESS as string, (err, user) => {
+    if (err && err.name === 'TokenExpiredError') {
+      // Токен истек, пытаемся обновить
+      const refreshToken = req.headers['x-refresh-token']; // Refresh token можно передавать в отдельном заголовке
+      if (!refreshToken) {
+        res.sendStatus(401); // Refresh token отсутствует
+        return;
+      }
+
+      // Проверяем refresh token
+      jwt.verify(refreshToken as string, process.env.SECRET_REFRESH as string, (refreshErr, decodedUser) => {
+        if (refreshErr) {
+          res.sendStatus(403); // Недействительный refresh token
+          return;
+        }
+
+        // Генерируем новый access token
+        const newAccessToken = jwt.sign(
+          { username: (decodedUser as any).username },
+          process.env.SECRET_ACCESS as string,
+          { expiresIn: '15m' }
+        );
+
+        // Отправляем новый access token в заголовке или теле ответа
+        res.setHeader('x-access-token', newAccessToken);
+
+        // После обновления токена, продолжаем обработку запроса
+        next();
+      });
+    } else if (err) {
+      return res.sendStatus(403); // Другие ошибки (не истекший токен, но недействительный)
+    } else {
+      // Токен действителен, продолжаем обработку запроса
+      next();
+    }
+  });
+};
+
+export const validateCredentials = (req: Request, res: Response, next: NextFunction) => {
+  const { username, password } = req.body;
+
+  // Проверка логина
+  if (!username || username.length < 3 || /\s/.test(username)) {
+    res.status(400).json({ message: 'Логин должен быть не менее 3 символов и не содержать пробелов.' });
+    return;
+  }
+
+  // Проверка пароля
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  if (!password || !passwordRegex.test(password)) {
+    res.status(400).json({
+      message:
+        'Пароль должен быть не менее 8 символов, содержать хотя бы одну заглавную букву, одну цифру и один специальный символ.'
+    });
+    return;
+  }
+
+  next(); // Если все проверки пройдены, передаем управление следующему middleware
+};
+
+export const checkUniqueUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { username } = req.body;
+
+  // Проверка, существует ли пользователь с таким именем
+  const existingUser = await getUserByUsername(username);
+  if (existingUser) {
+    res.status(400).json({ message: 'Имя пользователя уже занято' });
+    return;
+  }
+
+  next();
+};
 
 export const validatePoster = [
   check('imageUrl').isURL().withMessage('Поле imageUrl должно быть валидным URL'),
@@ -56,10 +153,11 @@ export const validatePoster = [
 ];
 
 // использовать вместе с концкертным валидатором
-export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
+export const handleValidationErrors = (req: Request, res: Response, next: NextFunction): void | Promise<void> => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    res.status(400).json({ errors: errors.array() });
+    return;
   }
   next();
 };

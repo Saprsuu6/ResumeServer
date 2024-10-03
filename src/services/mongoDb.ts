@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import { MongoClient, ObjectId } from 'mongodb';
 
-import { IConcertPoster } from '../interfaces/interfaces.ts';
+import { IClient, IConcertPoster } from '../interfaces/interfaces.ts';
 
 dotenv.config();
 
@@ -142,6 +142,50 @@ export async function updatePoster(id: string, updatedData: Partial<IConcertPost
     }
   } catch (err) {
     console.error('Ошибка при работе с базой данных:', err);
+  } finally {
+    await client.close();
+  }
+}
+
+export async function addNewClient(props: IClient) {
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    console.log('Успешное подключение к MongoDB');
+
+    const db = client.db(dbName);
+    const collection = db.collection(process.env.CLIENTS_COLLECTION as string);
+
+    const newClient: IClient = {
+      username: props.username,
+      password: props.password
+    };
+
+    const result = await collection.insertOne(newClient);
+    console.log(`Добавлен новый клиент с id: ${result.insertedId}`);
+  } catch (err) {
+    console.error('Ошибка при работе с базой данных:', err);
+  } finally {
+    await client.close();
+  }
+}
+
+export async function getUserByUsername(username: string) {
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    console.log('Успешное подключение к MongoDB');
+
+    const db = client.db(dbName);
+    const collection = db.collection(process.env.CLIENTS_COLLECTION as string);
+
+    const user = await collection.findOne({ username });
+    return user;
+  } catch (err) {
+    console.error('Ошибка при работе с базой данных:', err);
+    return null;
   } finally {
     await client.close();
   }
