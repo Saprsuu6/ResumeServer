@@ -91,7 +91,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         // Обновляем access token в cookie
         res.cookie('accessToken', newAccessToken, {
           httpOnly: true,
-          secure: true,
+          secure: process.env.RAILWAY_ENVIRONMENT_NAME === 'production',
           sameSite: 'strict',
           maxAge: 15 * 60 * 1000 // 15 минут
         });

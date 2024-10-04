@@ -35,14 +35,14 @@ authRouter.route('/login').post(async (req, res) => {
 
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: true, // Использовать только через HTTPS в продакшене
+    secure: process.env.RAILWAY_ENVIRONMENT_NAME === 'production', // Использовать только через HTTPS в продакшене
     sameSite: true, // Защита от CSRF
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней жизни для refresh token
   });
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.RAILWAY_ENVIRONMENT_NAME === 'production',
     sameSite: 'strict',
     maxAge: 15 * 60 * 1000 // Access token живет 15 минут
   });
