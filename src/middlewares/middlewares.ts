@@ -56,48 +56,53 @@ export const validateOwnerPassword = (req: Request, res: Response, next: NextFun
 };
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const accessToken: string = req.cookies.accessToken;
 
-  if (!token) {
-    res.sendStatus(401);
+  if (!accessToken) {
+    res.sendStatus(401); // Access token отсутствует
     return;
   }
 
-  jwt.verify(token, process.env.SECRET_ACCESS as string, (err, user) => {
+  jwt.verify(accessToken, process.env.SECRET_ACCESS as string, (err) => {
     if (err && err.name === 'TokenExpiredError') {
-      // Токен истек, пытаемся обновить
-      const refreshToken = req.headers['x-refresh-token']; // Refresh token можно передавать в отдельном заголовке
+      const refreshToken: string = req.cookies.refreshToken;
+
       if (!refreshToken) {
         res.sendStatus(401); // Refresh token отсутствует
         return;
       }
 
-      // Проверяем refresh token
-      jwt.verify(refreshToken as string, process.env.SECRET_REFRESH as string, (refreshErr, decodedUser) => {
+      jwt.verify(refreshToken, process.env.SECRET_REFRESH as string, (refreshErr, decodedUser) => {
         if (refreshErr) {
-          res.sendStatus(403); // Недействительный refresh token
+          // Refresh токен истек или недействителен
+          res.clearCookie('refreshToken');
+          res.clearCookie('accessToken');
+          res.status(403).json({ message: 'Refresh token истек. Пожалуйста, войдите заново.' });
           return;
         }
 
-        // Генерируем новый access token
+        // Refresh токен действителен, создаем новый access токен
         const newAccessToken = jwt.sign(
           { username: (decodedUser as any).username },
           process.env.SECRET_ACCESS as string,
           { expiresIn: '15m' }
         );
 
-        // Отправляем новый access token в заголовке или теле ответа
-        res.setHeader('x-access-token', newAccessToken);
+        // Обновляем access token в cookie
+        res.cookie('accessToken', newAccessToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'strict',
+          maxAge: 15 * 60 * 1000 // 15 минут
+        });
 
-        // После обновления токена, продолжаем обработку запроса
-        next();
+        next(); // Продолжаем обработку запроса
       });
     } else if (err) {
-      return res.sendStatus(403); // Другие ошибки (не истекший токен, но недействительный)
+      res.sendStatus(403); // Access token недействителен
+      return;
     } else {
-      // Токен действителен, продолжаем обработку запроса
-      next();
+      next(); // Access token действителен
     }
   });
 };

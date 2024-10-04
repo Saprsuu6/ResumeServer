@@ -33,7 +33,21 @@ authRouter.route('/login').post(async (req, res) => {
   const accessToken = generateAccessToken(user.username);
   const refreshToken = generateRefreshToken(user.username);
 
-  res.json({ accessToken, refreshToken });
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: true, // Использовать только через HTTPS в продакшене
+    sameSite: true, // Защита от CSRF
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней жизни для refresh token
+  });
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 15 * 60 * 1000 // Access token живет 15 минут
+  });
+
+  res.sendStatus(200);
 });
 
 export default authRouter;
