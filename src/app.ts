@@ -2,6 +2,7 @@ import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import path from 'path';
 
+import cookieParser from 'cookie-parser';
 import { cors, log } from './middlewares/middlewares.ts';
 import authRouter from './routes/auth/auth.ts';
 import cryptosRouter from './routes/cryptos/cryptos.ts';
@@ -24,6 +25,7 @@ export class App {
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(express.static(path.resolve(this.__dirname, 'public')));
     this.app.use(cors);
+    this.app.use(cookieParser());
     this.app.use(log);
   }
 

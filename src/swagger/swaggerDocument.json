@@ -153,6 +153,98 @@
         }
       }
     },
+    "/auth-status": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Check user authentication status",
+        "description": "Checks if the user is authenticated by verifying the access token.",
+        "responses": {
+          "200": {
+            "description": "User is authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Пользователь авторизован"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No access token or authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Нет токена доступа. Пожалуйста, войдите в систему."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid access token or refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Refresh токен недействителен."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Log out the user",
+        "description": "Logs out the user by clearing the access and refresh tokens from cookies.",
+        "responses": {
+          "200": {
+            "description": "User successfully logged out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Вы успешно вышли из системы"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error logging out the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/getCryptoInfo": {
       "get": {
         "tags": ["Crypto"],

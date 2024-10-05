@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import express from 'express';
 
-import { checkUniqueUser, validateCredentials } from '../../middlewares/middlewares.ts';
+import { authenticateToken, checkUniqueUser, validateCredentials } from '../../middlewares/middlewares.ts';
 import { generateAccessToken, generateRefreshToken } from '../../services/auth.ts';
 import { addNewClient, getUserByUsername } from '../../services/mongoDb.ts';
 
@@ -36,18 +36,39 @@ authRouter.route('/login').post(async (req, res) => {
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure: process.env.RAILWAY_ENVIRONMENT_NAME === 'production', // Использовать только через HTTPS в продакшене
-    sameSite: true, // Защита от CSRF
+    sameSite: 'lax', // Защита от CSRF
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней жизни для refresh token
   });
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     secure: process.env.RAILWAY_ENVIRONMENT_NAME === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 15 * 60 * 1000 // Access token живет 15 минут
   });
 
   res.sendStatus(200);
+});
+
+authRouter.route('/auth-status').get(authenticateToken, (req, res) => {
+  res.status(200).json({ message: 'Пользователь авторизован' });
+});
+
+authRouter.route('/logout').post((_, res) => {
+  // Удаляем refreshToken и accessToken из куков
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: process.env.RAILWAY_ENVIRONMENT_NAME === 'production',
+    sameSite: 'lax'
+  });
+  res.clearCookie('accessToken', {
+    httpOnly: true,
+    secure: process.env.RAILWAY_ENVIRONMENT_NAME === 'production',
+    sameSite: 'lax'
+  });
+
+  // Отправляем ответ клиенту
+  res.status(200).json({ message: 'Вы успешно вышли из системы' });
 });
 
 export default authRouter;

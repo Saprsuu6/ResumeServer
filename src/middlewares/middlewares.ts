@@ -12,8 +12,15 @@ export const log = (req: Request, _: Response, next: NextFunction) => {
 };
 
 export const cors = (req: Request, res: Response, next: NextFunction) => {
-  // Разрешаем доступ со всех доменов
-  res.header('Access-Control-Allow-Origin', '*');
+  const allowedOrigins = ['http://localhost:5173', 'https://resumeclient-production.up.railway.app']; // Замените на ваш фронтенд-домен
+  const origin = req.headers.origin as string;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin); // Указываем конкретный origin, а не '*'
+  }
+
+  // Разрешаем передачу куки с запросами
+  res.header('Access-Control-Allow-Credentials', 'true');
 
   // Разрешаем указанные заголовки
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -56,7 +63,7 @@ export const validateOwnerPassword = (req: Request, res: Response, next: NextFun
 };
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  const accessToken: string = req.cookies.accessToken;
+  const accessToken: string = req.cookies?.accessToken;
 
   if (!accessToken) {
     res.sendStatus(401); // Access token отсутствует
@@ -65,7 +72,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 
   jwt.verify(accessToken, process.env.SECRET_ACCESS as string, (err) => {
     if (err && err.name === 'TokenExpiredError') {
-      const refreshToken: string = req.cookies.refreshToken;
+      const refreshToken: string = req.cookies?.refreshToken;
 
       if (!refreshToken) {
         res.sendStatus(401); // Refresh token отсутствует
@@ -92,7 +99,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         res.cookie('accessToken', newAccessToken, {
           httpOnly: true,
           secure: process.env.RAILWAY_ENVIRONMENT_NAME === 'production',
-          sameSite: 'strict',
+          sameSite: 'lax',
           maxAge: 15 * 60 * 1000 // 15 минут
         });
 
