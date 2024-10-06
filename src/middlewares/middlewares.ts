@@ -45,23 +45,6 @@ export const setResCoins = async (req: Request, _: Response, next: NextFunction)
   next();
 };
 
-export const validateOwnerPassword = (req: Request, res: Response, next: NextFunction) => {
-  const { OWNER_PASSWORD } = req.body;
-
-  // Проверка обязательных параметров
-  if (!OWNER_PASSWORD) {
-    res.status(400).send({ message: 'Missing required parameter (OWNER_PASSWORD)' });
-    return;
-  }
-
-  if (OWNER_PASSWORD !== process.env.OWNER_PASSWORD) {
-    res.status(403).send({ message: 'Invalid password' });
-    return;
-  }
-
-  next();
-};
-
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const accessToken: string = req.cookies?.accessToken;
 

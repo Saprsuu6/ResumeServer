@@ -4,33 +4,34 @@ import fs from 'fs/promises';
 import { finished } from 'stream/promises';
 import { v4 as uuidv4 } from 'uuid';
 
-import { authenticateToken, validateOwnerPassword } from '../../middlewares/middlewares.ts';
-import { uploadFile } from '../../services/tebi.ts';
+import { MulterFile } from '../../interfaces/interfaces.ts';
+import { authenticateToken } from '../../middlewares/middlewares.ts';
+import { deleteFile, uploadFile } from '../../services/tebi.ts';
 import { upload } from '../routes.ts';
 
 const tebiIoRouter = express.Router();
 
-tebiIoRouter.route('/uploadImgToTebiIo').post(
+tebiIoRouter.route('/uploadMediaToTebiIo').post(
   // Используем upload.fields для обработки как файлов, так и полей формы
   upload.fields([
-    { name: 'image', maxCount: 10 }, // Обрабатываем до 10 файлов
-    { name: 'OWNER_PASSWORD', maxCount: 1 } // Поле для пароля
+    { name: 'image', maxCount: 10 } // Обрабатываем до 10 файлов
   ]),
   authenticateToken,
-  validateOwnerPassword, // Проверяем наличие и правильность пароля
   async (req: Request, res: Response): Promise<void> => {
-    // Проверяем, загружены ли файлы
-    if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
-      res.status(400).send({ message: 'Need at least one file' });
+    // Приводим тип req.files к интерфейсу MulterFile
+    const files = req.files as MulterFile;
+
+    // Проверяем, загружены ли файлы в поле 'image'
+    if (!files || !files['image'] || files['image'].length === 0) {
+      res.status(400).send({ message: 'Необходимо загрузить хотя бы один файл' });
       return;
     }
 
-    const files = req.files as Express.Multer.File[]; // Приводим к правильному типу
     const uploadedFilesUris: string[] = [];
 
     try {
       // Обрабатываем каждый файл
-      for (const file of files) {
+      for (const file of files['image']) {
         const fileStream = createReadStream(file.path);
         const uniqueFileName = `${uuidv4()}_${file.originalname}`;
 
@@ -58,9 +59,25 @@ tebiIoRouter.route('/uploadImgToTebiIo').post(
       // Возвращаем ссылки на все загруженные файлы
       res.send({ uris: uploadedFilesUris });
     } catch (err) {
+      console.log(err);
       res.status(500).send({ message: err });
     }
   }
 );
+
+tebiIoRouter
+  .route('/deleteMediaFromTebiIo/:id')
+  .delete(authenticateToken, async (req: Request, res: Response): Promise<void> => {
+    const fileId = req.query.id;
+
+    try {
+      await deleteFile(fileId as string);
+
+      res.status(200).send({ message: `File with ID ${fileId} deleted successfully` });
+    } catch (err) {
+      console.error(`Error deleting file with ID ${fileId}:`, err);
+      res.status(500).send({ message: `Failed to delete file with ID ${fileId}` });
+    }
+  });
 
 export default tebiIoRouter;

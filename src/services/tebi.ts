@@ -1,4 +1,4 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 import { ReadStream } from 'fs';
 
@@ -25,7 +25,24 @@ export async function uploadFile(uniqueFileName: string, fileStream: ReadStream,
     ContentType: file.mimetype
   };
 
+  console.log(credentials);
+
   await s3Client.send(new PutObjectCommand(uploadParams));
   const imageUrl = `https://s3.tebi.io/resume-site-pictures/${uniqueFileName}`;
   return imageUrl;
+}
+
+export async function deleteFile(fileId: string): Promise<void> {
+  const deleteParams = {
+    Bucket: bucketName,
+    Key: fileId
+  };
+
+  try {
+    await s3Client.send(new DeleteObjectCommand(deleteParams));
+    console.log(`File ${fileId} deleted successfully`);
+  } catch (error) {
+    console.error(`Error deleting file ${fileId}:`, error);
+    throw new Error(`Error deleting file ${fileId}`);
+  }
 }

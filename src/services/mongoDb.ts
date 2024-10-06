@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import { MongoClient, ObjectId } from 'mongodb';
 
 import { IClient, IConcertPoster } from '../interfaces/interfaces.ts';
+import { deleteFile } from './tebi.ts';
 
 dotenv.config();
 
@@ -32,7 +33,7 @@ export async function addPoster(props: IConcertPoster) {
     const collection = db.collection(process.env.POSTERS_COLLECTION as string);
 
     const newPoster: IConcertPoster = {
-      imageUrl: props.imageUrl,
+      imageUrls: props.imageUrls,
       eventName: props.eventName,
       description: props.description,
       date: props.date,
@@ -107,6 +108,22 @@ export async function deletePoster(id: string) {
     const db = client.db(dbName);
     const collection = db.collection(process.env.POSTERS_COLLECTION as string);
 
+    // Получаем постер по ID
+    const poster = await collection.findOne({ _id: new ObjectId(id) });
+
+    if (!poster) {
+      console.log(`Постер с id: ${id} не найден`);
+      return;
+    }
+
+    const imageUrls: string[] = poster.imageUrls;
+
+    if (imageUrls && imageUrls.length > 0) {
+      imageUrls.forEach(async (url) => {
+        await deleteFile(url);
+      });
+    }
+
     const result = await collection.deleteOne({ _id: new ObjectId(id) });
     if (result.deletedCount === 1) {
       console.log(`Постер с id: ${id} успешно удалён`);
@@ -129,6 +146,22 @@ export async function updatePoster(id: string, updatedData: Partial<IConcertPost
 
     const db = client.db(dbName);
     const collection = db.collection(process.env.POSTERS_COLLECTION as string);
+
+    // Получаем постер по ID
+    const poster = await collection.findOne({ _id: new ObjectId(id) });
+
+    if (!poster) {
+      console.log(`Постер с id: ${id} не найден`);
+      return;
+    }
+
+    const imageUrls: string[] = poster.imageUrls;
+
+    if (imageUrls && imageUrls.length > 0) {
+      imageUrls.forEach(async (url) => {
+        await deleteFile(url);
+      });
+    }
 
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },

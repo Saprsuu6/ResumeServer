@@ -9,7 +9,7 @@ export interface CoinInfo {
 }
 
 export interface IConcertPoster {
-  imageUrl: string;
+  imageUrls: string[];
   eventName: string;
   description: string;
   date: Date;
@@ -19,6 +19,10 @@ export interface IConcertPoster {
   availableTickets: number;
   eventType: string;
   organizer: string;
+}
+
+export interface MulterFile {
+  [fieldname: string]: Express.Multer.File[];
 }
 
 export interface IClient {

@@ -277,11 +277,11 @@
         }
       }
     },
-    "/uploadImgToTebiIo": {
+    "/uploadMediaToTebiIo": {
       "post": {
         "tags": ["TebiIo"],
-        "summary": "Upload multiple images to Tebi.io",
-        "description": "Endpoint for uploading multiple image files to Tebi.io storage.",
+        "summary": "Upload multiple media to Tebi.io",
+        "description": "Endpoint for uploading multiple media files to Tebi.io storage.",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -295,20 +295,16 @@
                       "format": "binary"
                     },
                     "description": "The array of image files to upload."
-                  },
-                  "OWNER_PASSWORD": {
-                    "type": "string",
-                    "description": "The password required to authorize the upload."
                   }
                 },
-                "required": ["image", "OWNER_PASSWORD"]
+                "required": ["image"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful upload of the images",
+            "description": "Successful upload of the medias",
             "content": {
               "application/json": {
                 "schema": {
@@ -319,7 +315,7 @@
                       "items": {
                         "type": "string"
                       },
-                      "description": "The URIs of the uploaded images."
+                      "description": "The URIs of the uploaded medias."
                     }
                   }
                 }
@@ -342,9 +338,6 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden. Invalid OWNER_PASSWORD."
-          },
           "500": {
             "description": "Internal error",
             "content": {
@@ -355,6 +348,79 @@
                     "message": {
                       "type": "string",
                       "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/deleteMediaFromTebiIo/:id": {
+      "delete": {
+        "tags": ["TebiIo"],
+        "summary": "Delete media from Tebi.io",
+        "description": "Delete a media file from Tebi.io storage by its file ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the media file to delete from Tebi.io."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "File with ID {id} deleted successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Media not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "File with ID {id} not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error deleting media",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to delete file with ID {id}."
                     }
                   }
                 }
@@ -625,8 +691,11 @@
       "ConcertPoster": {
         "type": "object",
         "properties": {
-          "imageUrl": {
-            "type": "string",
+          "imageUrls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "description": "Ссылка на изображение афиши концерта"
           },
           "eventName": {
