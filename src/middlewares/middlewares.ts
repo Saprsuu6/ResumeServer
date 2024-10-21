@@ -2,16 +2,18 @@ import { NextFunction, Request, Response } from 'express';
 import { check, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 
+import { Db } from 'mongodb';
 import { neededCoins } from '../controllers/index.ts';
 import { coinsList } from '../services/cryptoService.ts';
-import { getUserByUsername } from '../services/mongoDb.ts';
+import { getUserByUsername } from '../services/database/auth.ts';
+import { connectToMongo } from '../services/database/mongo_config.ts';
 
 export const log = (req: Request, _: Response, next: NextFunction) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 };
 
-export const cors = (req: Request, res: Response, next: NextFunction) => {
+export const customCors = (req: Request, res: Response, next: NextFunction) => {
   const allowedOrigins = ['http://localhost:5173', 'https://resumeclient-production.up.railway.app']; // Замените на ваш фронтенд-домен
   const origin = req.headers.origin as string;
 
@@ -123,7 +125,9 @@ export const checkUniqueUser = async (req: Request, res: Response, next: NextFun
   const { username } = req.body;
 
   // Проверка, существует ли пользователь с таким именем
-  const existingUser = await getUserByUsername(username);
+  const existingUser = await connectToMongo(async (dbConnection: Db, username: string) => {
+    await getUserByUsername(dbConnection, username);
+  }, username);
   if (existingUser) {
     res.status(400).json({ message: 'Имя пользователя уже занято' });
     return;

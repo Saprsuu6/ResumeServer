@@ -3,7 +3,6 @@ import open from 'open';
 
 import app from '../app.ts';
 import { CoinInfo } from '../interfaces/interfaces.ts';
-import { connectToMongo } from '../services/mongoDb.ts';
 import swaggerDocs from '../swagger/swagger.ts';
 
 dotenv.config();
@@ -38,17 +37,16 @@ export const neededCoins: Array<CoinInfo> = [];
 const PORT = parseInt(process.env.PORT as string);
 const BASE_URL = `http://localhost:${PORT}`;
 
-const server = app.listen(PORT, async () => {
+const serverInstance = app.listen(PORT, async () => {
   console.log(`Server is running at ${BASE_URL}`);
   await open(`http://localhost:${PORT}`);
-  connectToMongo();
   swaggerDocs(app, BASE_URL);
 });
 
 // Обработчик корректного завершения процесса
 const shutdown = () => {
   console.log('Shutting down server...');
-  server.close(() => {
+  serverInstance.close(() => {
     console.log('Server closed.');
     process.exit(0); // Завершаем процесс
   });

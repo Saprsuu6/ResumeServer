@@ -3,9 +3,10 @@ import express, { Express } from 'express';
 import path from 'path';
 
 import cookieParser from 'cookie-parser';
-import { cors, log } from './middlewares/middlewares.ts';
+import { customCors, log } from './middlewares/middlewares.ts';
 import authRouter from './routes/auth/auth.ts';
 import cryptosRouter from './routes/cryptos/cryptos.ts';
+import messangerRouter from './routes/messanger/messanger.ts';
 import postersRouter from './routes/posters/posters.ts';
 import generalRouter from './routes/routes.ts';
 import tebiIoRouter from './routes/tebiIo/tebiIo.ts';
@@ -24,7 +25,7 @@ export class App {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(express.static(path.resolve(this.__dirname, 'public')));
-    this.app.use(cors);
+    this.app.use(customCors);
     this.app.use(cookieParser());
     this.app.use(log);
   }
@@ -35,6 +36,7 @@ export class App {
     this.app.use(authRouter);
     this.app.use(postersRouter);
     this.app.use(tebiIoRouter);
+    this.app.use(messangerRouter);
   }
 }
 

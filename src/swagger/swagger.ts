@@ -19,14 +19,23 @@ async function loadJsonFile(path: string) {
   }
 }
 
-const swaggerDocs = (app: Express, baseUrl: string) => {
-  loadJsonFile('/src/swagger/swaggerDocument.json').then((json) => {
-    const options = {
-      customCss: `.swagger-ui .topbar { display: none } ${theme.getBuffer(SwaggerThemeNameEnum.DARK_MONOKAI)}`
-    };
+const swaggerDocs = async (app: Express, baseUrl: string) => {
+  const json = await loadJsonFile('/src/swagger/swaggerDocument.json');
+  if (!json) {
+    console.error('Failed to load Swagger JSON');
+    return;
+  }
 
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(json, options));
-  });
+  // Опции для Swagger UI с тёмной темой
+  const options = {
+    customCss: `
+      .swagger-ui .topbar { display: none; } 
+      ${theme.getBuffer(SwaggerThemeNameEnum.DARK_MONOKAI)}
+    `,
+    customSiteTitle: 'SaprLand API Docs'
+  };
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(json, options));
   console.log(`Docs available at ${baseUrl}/api-docs`);
 };
 

@@ -20,4 +20,14 @@ generalRouter.route('/').get(async (_, res) => {
   res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
 
+generalRouter.get('/api-docs/openapi.json', (req, res) => {
+  // Убедитесь, что res является объектом Express
+  if (typeof res.setHeader === 'function') {
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(path.join(__dirname, '../swagger/swaggerDocument.json')); // Укажите правильный путь к файлу
+  } else {
+    console.error('res is not a valid Express response object');
+  }
+});
+
 export default generalRouter;

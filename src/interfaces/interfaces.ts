@@ -29,3 +29,8 @@ export interface IClient {
   username: string;
   password: string;
 }
+
+export interface IChatMessage {
+  sender: string;
+  content: string;
+}

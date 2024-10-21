@@ -20,6 +20,10 @@
     {
       "name": "Auth",
       "description": "User authentication and registration"
+    },
+    {
+      "name": "Messenger",
+      "description": "Chat messages API\n\n### WebSocket Integration\n\n- **URL:** `ws://localhost:3000`\n- **Event:** `sendMessage`\n- **Payload:** `{ sender: string, content: string }`\n- **Response Event:** `receiveMessage`\n\n```javascript\n// Подключение к серверу WebSocket\nconst socket = io('http://localhost:3000');\n\n// Отправка сообщения\nsocket.emit('sendMessage', { sender: 'John Doe', content: 'Hello!' });\n\n// Обработка входящих сообщений\nsocket.on('receiveMessage', (message) => {\n  console.log('Новое сообщение:', message);\n});\n```\n"
     }
   ],
   "paths": {
@@ -657,6 +661,43 @@
           }
         }
       }
+    },
+    "/messages": {
+      "get": {
+        "tags": ["Messenger"],
+        "summary": "Get chat messages",
+        "description": "Retrieve a list of all chat messages.\n\n### WebSocket Integration\n\nTo receive messages in real-time, connect to WebSocket at `ws://localhost:3000` and listen for the event `receiveMessage`.",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of chat messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ChatMessage"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error retrieving chat messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -753,6 +794,25 @@
             "type": "string"
           }
         }
+      },
+      "ChatMessage": {
+        "type": "object",
+        "properties": {
+          "sender": {
+            "type": "string",
+            "description": "The sender of the message"
+          },
+          "content": {
+            "type": "string",
+            "description": "The content of the message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp of the message"
+          }
+        },
+        "required": ["sender", "content"]
       }
     }
   }

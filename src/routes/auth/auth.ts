@@ -1,9 +1,12 @@
 import bcrypt from 'bcryptjs';
 import express from 'express';
 
+import { Db } from 'mongodb';
+import { IClient } from '../../interfaces/interfaces.ts';
 import { authenticateToken, checkUniqueUser, validateCredentials } from '../../middlewares/middlewares.ts';
 import { generateAccessToken, generateRefreshToken } from '../../services/auth.ts';
-import { addNewClient, getUserByUsername } from '../../services/mongoDb.ts';
+import { addNewClient, getUserByUsername } from '../../services/database/auth.ts';
+import { connectToMongo } from '../../services/database/mongo_config.ts';
 
 const authRouter = express.Router();
 
@@ -11,11 +14,17 @@ authRouter.route('/register').post(checkUniqueUser, validateCredentials, async (
   try {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    addNewClient({
-      username: username,
-      password: hashedPassword
-    });
-    res.status(201).json({ message: 'Пользователь успешно зарегестрирован' });
+
+    const result = await connectToMongo(
+      async (dbConnection: Db, props: IClient) => {
+        await addNewClient(dbConnection, props);
+      },
+      {
+        username: username,
+        password: hashedPassword
+      }
+    );
+    res.status(201).json({ message: result });
   } catch (error) {
     res.status(500).json({ error: 'Ошибка при регистрации пользователя' });
   }
@@ -23,7 +32,9 @@ authRouter.route('/register').post(checkUniqueUser, validateCredentials, async (
 
 authRouter.route('/login').post(async (req, res) => {
   const { username, password } = req.body;
-  const user = await getUserByUsername(username);
+  const user = await connectToMongo(async (dbConnection: Db, username: string) => {
+    await getUserByUsername(dbConnection, username);
+  }, username);
   if (!user || !(await bcrypt.compare(password, user.password))) {
     res.status(403).json({ message: 'Неправильные учетные данные' });
     return;
