@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
     try {
       await connectToMongo(
         async (dbConnection: Db, props: IChatMessage) => {
-          await postMessagesToChat(dbConnection, props);
+          return await postMessagesToChat(dbConnection, props);
         },
         {
           sender: sender,

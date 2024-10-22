@@ -17,7 +17,7 @@ authRouter.route('/register').post(checkUniqueUser, validateCredentials, async (
 
     const result = await connectToMongo(
       async (dbConnection: Db, props: IClient) => {
-        await addNewClient(dbConnection, props);
+        return await addNewClient(dbConnection, props);
       },
       {
         username: username,
@@ -33,7 +33,7 @@ authRouter.route('/register').post(checkUniqueUser, validateCredentials, async (
 authRouter.route('/login').post(async (req, res) => {
   const { username, password } = req.body;
   const user = await connectToMongo(async (dbConnection: Db, username: string) => {
-    await getUserByUsername(dbConnection, username);
+    return await getUserByUsername(dbConnection, username);
   }, username);
   if (!user || !(await bcrypt.compare(password, user.password))) {
     res.status(403).json({ message: 'Неправильные учетные данные' });

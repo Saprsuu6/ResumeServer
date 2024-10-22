@@ -21,7 +21,7 @@ export async function getUserByUsername(db: Db, username: string) {
   try {
     const collection = db.collection(process.env.CLIENTS_COLLECTION as string);
 
-    const user = await collection.findOne({ username });
+    const user = await collection.findOne({ username: 'Andry' });
     return user;
   } catch (err) {
     console.error('Ошибка при работе с базой данных:', err);

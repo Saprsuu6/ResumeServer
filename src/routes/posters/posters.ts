@@ -15,7 +15,7 @@ postersRouter
       const poster: IConcertPoster = req.body;
 
       const result = await connectToMongo(async (dbConnection: Db, poster: IConcertPoster) => {
-        await addPoster(dbConnection, poster);
+        return await addPoster(dbConnection, poster);
       }, poster);
       res.status(201).json({ message: result });
     } catch (error) {
@@ -26,7 +26,7 @@ postersRouter
 postersRouter.route('/posters').get(async (_, res) => {
   try {
     const posters = await connectToMongo(async (dbConnection: Db) => {
-      await getPosters(dbConnection);
+      return await getPosters(dbConnection);
     });
     res.status(200).json(posters);
   } catch (error) {
@@ -39,7 +39,7 @@ postersRouter.route('/posters/byId/:id').get(async (req, res) => {
     const { id } = req.params;
 
     const posters = await connectToMongo(async (dbConnection: Db, id) => {
-      await getPosterById(dbConnection, id);
+      return await getPosterById(dbConnection, id);
     }, id);
     res.status(200).json(posters);
   } catch (error) {
@@ -51,7 +51,7 @@ postersRouter.route('/posters/:id').delete(authenticateToken, async (req, res) =
   try {
     const { id } = req.params;
     const result = await connectToMongo(async (dbConnection: Db, id: string) => {
-      await deletePoster(dbConnection, id);
+      return await deletePoster(dbConnection, id);
     }, id);
     res.status(200).json({ message: result });
   } catch (error) {
@@ -67,7 +67,7 @@ postersRouter
       const updatedData: Partial<IConcertPoster> = req.body;
       const result = await connectToMongo(
         async (dbConnection: Db, id: string, updatedData: Partial<IConcertPoster>) => {
-          await updatePoster(dbConnection, id, updatedData);
+          return await updatePoster(dbConnection, id, updatedData);
         },
         id,
         updatedData

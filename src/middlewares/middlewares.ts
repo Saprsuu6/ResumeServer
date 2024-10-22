@@ -126,7 +126,7 @@ export const checkUniqueUser = async (req: Request, res: Response, next: NextFun
 
   // Проверка, существует ли пользователь с таким именем
   const existingUser = await connectToMongo(async (dbConnection: Db, username: string) => {
-    await getUserByUsername(dbConnection, username);
+    return await getUserByUsername(dbConnection, username);
   }, username);
   if (existingUser) {
     res.status(400).json({ message: 'Имя пользователя уже занято' });

@@ -9,7 +9,7 @@ const messangerRouter = express.Router();
 messangerRouter.get('/messages', async (req, res) => {
   try {
     const messages = await connectToMongo(async (dbConnection: Db) => {
-      await getMessagesFromChat(dbConnection);
+      return await getMessagesFromChat(dbConnection);
     });
 
     res.status(200).json({ message: messages });
