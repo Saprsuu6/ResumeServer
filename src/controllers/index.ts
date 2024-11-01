@@ -35,12 +35,11 @@ export const neededBitcoinNameArray = [
 export const neededCoins: Array<CoinInfo> = [];
 
 const PORT = parseInt(process.env.PORT as string);
-const BASE_URL = `http://localhost:${PORT}`;
+const BASE_URL = process.env.BASE_URL as string;
 
 const serverInstance = app.listen(PORT, async () => {
   console.log(`Server is running at ${BASE_URL}`);
   await open(`http://localhost:${PORT}`);
-  console.log(process.env.MONGO_DB_CONNECTION_STRING);
   swaggerDocs(app, BASE_URL);
 });
 
