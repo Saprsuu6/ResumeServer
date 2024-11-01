@@ -40,6 +40,7 @@ const BASE_URL = `http://localhost:${PORT}`;
 const serverInstance = app.listen(PORT, async () => {
   console.log(`Server is running at ${BASE_URL}`);
   await open(`http://localhost:${PORT}`);
+  console.log(process.env.MONGO_DB_CONNECTION_STRING);
   swaggerDocs(app, BASE_URL);
 });
 

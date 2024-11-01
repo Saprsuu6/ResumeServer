@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "kill-port 8080 && nodemon",
-    "dev": "kill-port 8080 && nodemon",
+    "dev": "kill-port 8080 && dotenv -e .env.local -- nodemon",
     "build": "npx tsc",
     "eslint_test": "npx eslint \"src/**/*.{js,ts}\" --fix"
   },
@@ -48,6 +48,7 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.5.0",
     "@typescript-eslint/parser": "^8.5.0",
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.30.0",
     "nodemon": "^3.1.4",
