@@ -26,7 +26,8 @@
             console.log('Инициализация Swagger UI...');
 
             const ui = SwaggerUIBundle({
-                url: "http://localhost:8080/api-docs/openapi.json",
+                url: "https://resumeserver-production.up.railway.app/api-docs/openapi.json",
+                //url: "http://localhost:8080/api-docs/openapi.json",
                 dom_id: '#swagger-ui',
                 onComplete: function () {
                     console.log('Swagger UI успешно загружен!');
