@@ -14,7 +14,11 @@ export const log = (req: Request, _: Response, next: NextFunction) => {
 };
 
 export const customCors = (req: Request, res: Response, next: NextFunction) => {
-  const allowedOrigins = ['http://localhost:5173', 'https://resumeclient-production.up.railway.app']; // Замените на ваш фронтенд-домен
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://resumeclient-production.up.railway.app',
+    'https://resume-server-self.vercel.app'
+  ]; // Замените на ваш фронтенд-домен
   const origin = req.headers.origin as string;
 
   if (allowedOrigins.includes(origin)) {
